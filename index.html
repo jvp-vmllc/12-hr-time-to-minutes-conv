@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vision Metering - Time to Minutes Calculator</title>
+    <title>Vision Metering - Clock Register Payload Generator</title>
     <style>
         * {
             margin: 0;
@@ -27,7 +27,7 @@
             border-radius: 20px;
             padding: 40px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            max-width: 500px;
+            max-width: 600px;
             width: 100%;
             animation: fadeIn 0.5s ease-out;
         }
@@ -73,65 +73,21 @@
             font-weight: 500;
         }
 
-        .live-clock {
+        .section {
             background: #f8f8f8;
             border-radius: 15px;
             padding: 20px;
-            margin-bottom: 30px;
-            text-align: center;
+            margin-bottom: 20px;
             box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
-        .timezone-selector {
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #000;
             margin-bottom: 15px;
-        }
-
-        .timezone-selector select {
-            padding: 8px 15px;
-            font-size: 14px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            background: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            min-width: 250px;
-        }
-
-        .timezone-selector select:hover {
-            border-color: #FF0000;
-        }
-
-        .timezone-selector select:focus {
-            outline: none;
-            border-color: #000;
-        }
-
-        .timezone-label {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 5px;
             text-transform: uppercase;
             letter-spacing: 1px;
-        }
-
-        .current-time {
-            font-size: 42px;
-            font-weight: bold;
-            color: #000;
-            letter-spacing: 2px;
-            margin-bottom: 10px;
-            font-family: 'Courier New', monospace;
-        }
-
-        .current-minutes {
-            font-size: 18px;
-            color: #666;
-        }
-
-        .current-minutes .minutes-value {
-            color: #FF0000;
-            font-weight: bold;
-            font-size: 24px;
         }
 
         .time-input {
@@ -140,10 +96,6 @@
             margin-bottom: 20px;
             align-items: center;
             justify-content: center;
-        }
-
-        .input-group {
-            position: relative;
         }
 
         input[type="number"] {
@@ -172,7 +124,7 @@
         .am-pm-toggle {
             display: flex;
             gap: 10px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             justify-content: center;
         }
 
@@ -193,12 +145,61 @@
             transform: scale(1.1);
         }
 
-        .am-pm-btn:hover {
-            transform: scale(1.05);
+        .register-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .option-label {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        select, .checkbox-wrapper {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        select {
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        select:hover, .checkbox-wrapper:hover {
             border-color: #FF0000;
         }
 
-        .calculate-btn {
+        select:focus {
+            outline: none;
+            border-color: #000;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .generate-btn {
             width: 100%;
             padding: 15px;
             font-size: 20px;
@@ -214,95 +215,118 @@
             letter-spacing: 1px;
         }
 
-        .calculate-btn:hover {
+        .generate-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
             background: linear-gradient(135deg, #FF0000 0%, #FFA500 100%);
             color: white;
         }
 
-        .result {
-            background: #f5f5f5;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            min-height: 80px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
+        .results {
+            display: grid;
+            gap: 15px;
         }
 
-        .result.show {
-            background: linear-gradient(135deg, #FFF9E6 0%, #FFE6E6 100%);
+        .result-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .result-item:hover {
             border-color: #FFD700;
         }
 
-        .minutes-display {
-            font-size: 48px;
-            font-weight: bold;
-            color: #FF0000;
-            margin-bottom: 5px;
-            animation: slideIn 0.5s ease-out;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .time-display {
-            font-size: 18px;
+        .result-label {
+            font-size: 12px;
             color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .result-value {
+            font-size: 20px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            color: #000;
+            word-break: break-all;
+        }
+
+        .result-value.hex {
+            color: #FF0000;
+        }
+
+        .result-value.protobuf {
+            color: #008000;
+            font-size: 32px;
+            background: linear-gradient(135deg, #E6FFE6 0%, #D4FFD4 100%);
+            padding: 15px;
+            border-radius: 8px;
+            border: 3px solid #00CC00;
+            text-align: center;
+            margin-top: 10px;
+            box-shadow: 0 4px 8px rgba(0, 200, 0, 0.2);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .bit-breakdown {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
+            font-family: 'Courier New', monospace;
+            line-height: 1.5;
+        }
+
+        .bit-breakdown span {
+            display: inline-block;
+            padding: 2px 4px;
+            margin: 2px;
+            border-radius: 3px;
+        }
+
+        .bit-breakdown .minutes {
+            background: #FFE6E6;
+            color: #CC0000;
+        }
+
+        .bit-breakdown .time-id {
+            background: #E6F3FF;
+            color: #0066CC;
+        }
+
+        .bit-breakdown .one-shot {
+            background: #E6FFE6;
+            color: #006600;
         }
 
         .error {
             color: #FF0000;
             font-size: 16px;
+            text-align: center;
             margin-top: 10px;
         }
 
-        .examples {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #FFD700;
-        }
-
-        .examples h3 {
-            font-size: 18px;
-            color: #000;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .example-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 10px;
-            color: #555;
+        .info-note {
+            background: #FFF9E6;
+            border: 1px solid #FFD700;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
             font-size: 14px;
-            border-radius: 5px;
-            margin-bottom: 5px;
-            transition: all 0.3s ease;
+            color: #666;
         }
 
-        .example-item:hover {
-            background: #f8f8f8;
+        .info-note strong {
             color: #000;
-        }
-
-        .example-item span:last-child {
-            color: #FF0000;
-            font-weight: 600;
         }
 
         @media (max-width: 480px) {
@@ -310,12 +334,8 @@
                 padding: 30px 20px;
             }
             
-            .current-time {
-                font-size: 32px;
-            }
-            
-            .logo {
-                font-size: 28px;
+            .register-options {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -327,68 +347,91 @@
             <div class="accent-bar"></div>
         </div>
 
-        <h1>Time to Minutes Calculator</h1>
+        <h1>Clock Register Payload Generator</h1>
         
-        <div class="live-clock">
-            <div class="timezone-selector">
-                <div class="timezone-label">Timezone</div>
-                <select id="timezoneSelect">
-                    <option value="local">Local Time</option>
-                    <option value="America/New_York">USA - Eastern (SC)</option>
-                    <option value="Asia/Manila">Philippines</option>
-                    <option value="America/Chicago">USA - Central</option>
-                    <option value="America/Denver">USA - Mountain</option>
-                    <option value="America/Los_Angeles">USA - Pacific</option>
-                    <option value="Europe/London">UK - London</option>
-                    <option value="Asia/Tokyo">Japan - Tokyo</option>
-                    <option value="Australia/Sydney">Australia - Sydney</option>
-                </select>
+        <div class="section">
+            <div class="section-title">Set Alarm Time</div>
+            
+            <div class="time-input">
+                <input type="number" id="hours" min="1" max="12" placeholder="12" value="5">
+                <span class="colon">:</span>
+                <input type="number" id="minutes" min="0" max="59" placeholder="00" value="0">
             </div>
-            <div class="current-time" id="liveClock">--:--:-- --</div>
-            <div class="current-minutes">
-                Current time: <span class="minutes-value" id="liveMinutes">0</span> minutes from midnight
-            </div>
-        </div>
-        
-        <div class="time-input">
-            <div class="input-group">
-                <input type="number" id="hours" min="1" max="12" placeholder="12" value="12">
-            </div>
-            <span class="colon">:</span>
-            <div class="input-group">
-                <input type="number" id="minutes" min="0" max="59" placeholder="00" value="00">
+
+            <div class="am-pm-toggle">
+                <button class="am-pm-btn active" id="am-btn">AM</button>
+                <button class="am-pm-btn" id="pm-btn">PM</button>
             </div>
         </div>
 
-        <div class="am-pm-toggle">
-            <button class="am-pm-btn active" id="am-btn">AM</button>
-            <button class="am-pm-btn" id="pm-btn">PM</button>
+        <div class="section">
+            <div class="section-title">Register Configuration</div>
+            
+            <div class="register-options">
+                <div class="option-group">
+                    <label class="option-label">Time ID (1-7)</label>
+                    <select id="timeId">
+                        <option value="1" selected>1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                    </select>
+                </div>
+                
+                <div class="option-group">
+                    <label class="option-label">One Shot</label>
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="oneShot">
+                        <label for="oneShot">Enable One Shot</label>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <button class="calculate-btn" onclick="calculateMinutes()">Calculate Minutes</button>
+        <button class="generate-btn" onclick="generatePayload()">Generate Payload</button>
 
-        <div class="result" id="result">
-            <span style="color: #999;">Enter a time to calculate</span>
+        <div id="results" style="display: none;">
+            <div class="section">
+                <div class="section-title">Generated Payload</div>
+                
+                <div class="results">
+                    <div class="result-item">
+                        <div class="result-label">Minutes from Midnight</div>
+                        <div class="result-value" id="minutesResult">--</div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-label">Clock Register Value (Decimal)</div>
+                        <div class="result-value" id="decimalResult">--</div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-label">Clock Register Value (Hex)</div>
+                        <div class="result-value hex" id="hexResult">--</div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-label">Protobuf Encoded</div>
+                        <div class="result-value protobuf" id="protobufResult">--</div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-label">Bit Breakdown (16-bit)</div>
+                        <div class="bit-breakdown" id="bitBreakdown">--</div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="examples">
-            <h3>Quick Reference:</h3>
-            <div class="example-item">
-                <span>12:00 AM (Midnight)</span>
-                <span>0 minutes</span>
-            </div>
-            <div class="example-item">
-                <span>5:00 AM</span>
-                <span>300 minutes</span>
-            </div>
-            <div class="example-item">
-                <span>12:00 PM (Noon)</span>
-                <span>720 minutes</span>
-            </div>
-            <div class="example-item">
-                <span>11:59 PM</span>
-                <span>1439 minutes</span>
-            </div>
+        <div class="info-note">
+            <strong>Clock Register Format (16-bit):</strong><br>
+            • Bits 0-11: Time in minutes (0-1439)<br>
+            • Bits 12-14: Time ID (1-7)<br>
+            • Bit 15: One Shot flag<br><br>
+            <strong>Example:</strong> 5:00 AM with Time ID 1 = 300 minutes | (1 << 12) = 4396 = 0x112C → Protobuf: 78ac22
         </div>
     </div>
 
@@ -397,75 +440,9 @@
         const minutesInput = document.getElementById('minutes');
         const amBtn = document.getElementById('am-btn');
         const pmBtn = document.getElementById('pm-btn');
-        const resultDiv = document.getElementById('result');
-        const liveClock = document.getElementById('liveClock');
-        const liveMinutes = document.getElementById('liveMinutes');
-        const timezoneSelect = document.getElementById('timezoneSelect');
-
-        // Update live clock
-        function updateClock() {
-            const now = new Date();
-            let displayTime;
-            
-            const selectedTimezone = timezoneSelect.value;
-            
-            if (selectedTimezone === 'local') {
-                displayTime = now;
-            } else {
-                // Convert to selected timezone
-                const options = {
-                    timeZone: selectedTimezone,
-                    hour12: true,
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                };
-                const timeString = now.toLocaleTimeString('en-US', options);
-                
-                // Parse the time string to get hours and minutes
-                const [time, period] = timeString.split(' ');
-                const [hours, minutes, seconds] = time.split(':').map(num => parseInt(num));
-                
-                // Calculate total minutes
-                let totalHours = hours;
-                if (period === 'PM' && hours !== 12) {
-                    totalHours += 12;
-                } else if (period === 'AM' && hours === 12) {
-                    totalHours = 0;
-                }
-                
-                const totalMinutes = totalHours * 60 + minutes;
-                
-                liveClock.textContent = timeString;
-                liveMinutes.textContent = totalMinutes;
-                return;
-            }
-            
-            // Local time calculation
-            let hours = displayTime.getHours();
-            const minutes = displayTime.getMinutes();
-            const seconds = displayTime.getSeconds();
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-            
-            // Calculate total minutes from midnight
-            const totalMinutes = hours * 60 + minutes;
-            
-            // Convert to 12-hour format for display
-            hours = hours % 12;
-            hours = hours ? hours : 12; // 0 should be 12
-            
-            const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} ${ampm}`;
-            
-            liveClock.textContent = timeString;
-            liveMinutes.textContent = totalMinutes;
-        }
-
-        // Update clock when timezone changes
-        timezoneSelect.addEventListener('change', updateClock);
-
-        // Update clock immediately and then every second
-        updateClock();
-        setInterval(updateClock, 1000);
+        const timeIdSelect = document.getElementById('timeId');
+        const oneShotCheckbox = document.getElementById('oneShot');
+        const resultsDiv = document.getElementById('results');
 
         // AM/PM toggle
         amBtn.addEventListener('click', function() {
@@ -478,7 +455,7 @@
             amBtn.classList.remove('active');
         });
 
-        // Format minutes input to always show 2 digits
+        // Input validation
         minutesInput.addEventListener('input', function() {
             if (this.value > 59) this.value = 59;
             if (this.value < 0) this.value = 0;
@@ -493,24 +470,21 @@
         [hoursInput, minutesInput].forEach(input => {
             input.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
-                    calculateMinutes();
+                    generatePayload();
                 }
             });
         });
 
-        function calculateMinutes() {
+        function generatePayload() {
             const hours = parseInt(hoursInput.value) || 12;
             const minutes = parseInt(minutesInput.value) || 0;
             const isAM = amBtn.classList.contains('active');
+            const timeId = parseInt(timeIdSelect.value);
+            const oneShot = oneShotCheckbox.checked;
 
             // Validate input
-            if (hours < 1 || hours > 12) {
-                showError('Please enter hours between 1 and 12');
-                return;
-            }
-
-            if (minutes < 0 || minutes > 59) {
-                showError('Please enter minutes between 0 and 59');
+            if (hours < 1 || hours > 12 || minutes < 0 || minutes > 59) {
+                alert('Please enter valid time values');
                 return;
             }
 
@@ -525,24 +499,66 @@
             // Calculate total minutes from midnight
             const totalMinutes = totalHours * 60 + minutes;
 
-            // Display result
-            const period = isAM ? 'AM' : 'PM';
-            const formattedMinutes = minutes.toString().padStart(2, '0');
+            // Build clock register value
+            let clockRegister = 0;
             
-            resultDiv.classList.add('show');
-            resultDiv.innerHTML = `
-                <div class="minutes-display">${totalMinutes}</div>
-                <div class="time-display">${hours}:${formattedMinutes} ${period} = ${totalMinutes} minutes from midnight</div>
+            // Bits 0-11: minutes (max 4095, but we only need up to 1439)
+            clockRegister |= (totalMinutes & 0xFFF);
+            
+            // Bits 12-14: time ID (3 bits, max value 7)
+            clockRegister |= ((timeId & 0x7) << 12);
+            
+            // Bit 15: one shot
+            if (oneShot) {
+                clockRegister |= (1 << 15);
+            }
+
+            // Convert to hex
+            const hexValue = '0x' + clockRegister.toString(16).toUpperCase().padStart(4, '0');
+
+            // Encode as protobuf varint for field 15
+            // Field 15 with wire type 0 (varint) = (15 << 3) | 0 = 120 = 0x78
+            const protobufEncoded = encodeProtobuf(15, clockRegister);
+
+            // Create bit visualization
+            const binaryString = clockRegister.toString(2).padStart(16, '0');
+            const bitBreakdown = `
+                <span class="one-shot">${binaryString[0]}</span>
+                <span class="time-id">${binaryString.substring(1, 4)}</span>
+                <span class="minutes">${binaryString.substring(4)}</span><br>
+                <small>OneShot: ${oneShot ? '1' : '0'} | TimeID: ${timeId} | Minutes: ${totalMinutes}</small>
             `;
+
+            // Display results
+            document.getElementById('minutesResult').textContent = totalMinutes;
+            document.getElementById('decimalResult').textContent = clockRegister;
+            document.getElementById('hexResult').textContent = hexValue;
+            document.getElementById('protobufResult').textContent = protobufEncoded;
+            document.getElementById('bitBreakdown').innerHTML = bitBreakdown;
+            
+            resultsDiv.style.display = 'block';
         }
 
-        function showError(message) {
-            resultDiv.classList.remove('show');
-            resultDiv.innerHTML = `<div class="error">${message}</div>`;
+        function encodeProtobuf(fieldNumber, value) {
+            // Encode field number and wire type
+            const tag = (fieldNumber << 3) | 0; // wire type 0 for varint
+            let result = tag.toString(16).padStart(2, '0');
+            
+            // Encode value as varint
+            let remaining = value;
+            let encoded = '';
+            
+            while (remaining > 0x7F) {
+                encoded += ((remaining & 0x7F) | 0x80).toString(16).padStart(2, '0');
+                remaining >>>= 7;
+            }
+            encoded += remaining.toString(16).padStart(2, '0');
+            
+            return result + encoded;
         }
 
-        // Auto-calculate on load with default values
-        calculateMinutes();
+        // Generate initial payload with default values
+        generatePayload();
     </script>
 </body>
 </html>
