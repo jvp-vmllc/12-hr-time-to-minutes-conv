@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time to Minutes Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .time-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        input[type="number"] {
+            width: 80px;
+            padding: 15px;
+            font-size: 24px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            transform: scale(1.05);
+        }
+
+        .colon {
+            font-size: 24px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .am-pm-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .am-pm-btn {
+            padding: 10px 25px;
+            font-size: 18px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .am-pm-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: scale(1.1);
+        }
+
+        .am-pm-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .result {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .result.show {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .minutes-display {
+            font-size: 48px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .time-display {
+            font-size: 18px;
+            color: #666;
+        }
+
+        .error {
+            color: #e74c3c;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .examples {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .examples h3 {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .example-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            color: #888;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⏰ Time to Minutes</h1>
+        
+        <div class="time-input">
+            <div class="input-group">
+                <input type="number" id="hours" min="1" max="12" placeholder="12" value="12">
+            </div>
+            <span class="colon">:</span>
+            <div class="input-group">
+                <input type="number" id="minutes" min="0" max="59" placeholder="00" value="00">
+            </div>
+        </div>
+
+        <div class="am-pm-toggle">
+            <button class="am-pm-btn active" id="am-btn">AM</button>
+            <button class="am-pm-btn" id="pm-btn">PM</button>
+        </div>
+
+        <button class="calculate-btn" onclick="calculateMinutes()">Calculate Minutes</button>
+
+        <div class="result" id="result">
+            <span style="color: #999;">Enter a time to calculate</span>
+        </div>
+
+        <div class="examples">
+            <h3>Examples:</h3>
+            <div class="example-item">
+                <span>12:00 AM (Midnight)</span>
+                <span>0 minutes</span>
+            </div>
+            <div class="example-item">
+                <span>5:00 AM</span>
+                <span>300 minutes</span>
+            </div>
+            <div class="example-item">
+                <span>12:00 PM (Noon)</span>
+                <span>720 minutes</span>
+            </div>
+            <div class="example-item">
+                <span>11:59 PM</span>
+                <span>1439 minutes</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const hoursInput = document.getElementById('hours');
+        const minutesInput = document.getElementById('minutes');
+        const amBtn = document.getElementById('am-btn');
+        const pmBtn = document.getElementById('pm-btn');
+        const resultDiv = document.getElementById('result');
+
+        // AM/PM toggle
+        amBtn.addEventListener('click', function() {
+            amBtn.classList.add('active');
+            pmBtn.classList.remove('active');
+        });
+
+        pmBtn.addEventListener('click', function() {
+            pmBtn.classList.add('active');
+            amBtn.classList.remove('active');
+        });
+
+        // Format minutes input to always show 2 digits
+        minutesInput.addEventListener('input', function() {
+            if (this.value > 59) this.value = 59;
+            if (this.value < 0) this.value = 0;
+        });
+
+        hoursInput.addEventListener('input', function() {
+            if (this.value > 12) this.value = 12;
+            if (this.value < 1) this.value = 1;
+        });
+
+        // Calculate on Enter key
+        [hoursInput, minutesInput].forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    calculateMinutes();
+                }
+            });
+        });
+
+        function calculateMinutes() {
+            const hours = parseInt(hoursInput.value) || 12;
+            const minutes = parseInt(minutesInput.value) || 0;
+            const isAM = amBtn.classList.contains('active');
+
+            // Validate input
+            if (hours < 1 || hours > 12) {
+                showError('Please enter hours between 1 and 12');
+                return;
+            }
+
+            if (minutes < 0 || minutes > 59) {
+                showError('Please enter minutes between 0 and 59');
+                return;
+            }
+
+            // Convert to 24-hour format
+            let totalHours = hours;
+            if (hours === 12) {
+                totalHours = isAM ? 0 : 12;
+            } else {
+                totalHours = isAM ? hours : hours + 12;
+            }
+
+            // Calculate total minutes from midnight
+            const totalMinutes = totalHours * 60 + minutes;
+
+            // Display result
+            const period = isAM ? 'AM' : 'PM';
+            const formattedMinutes = minutes.toString().padStart(2, '0');
+            
+            resultDiv.classList.add('show');
+            resultDiv.innerHTML = `
+                <div class="minutes-display">${totalMinutes}</div>
+                <div class="time-display">${hours}:${formattedMinutes} ${period} = ${totalMinutes} minutes from midnight</div>
+            `;
+        }
+
+        function showError(message) {
+            resultDiv.classList.remove('show');
+            resultDiv.innerHTML = `<div class="error">${message}</div>`;
+        }
+
+        // Auto-calculate on load with default values
+        calculateMinutes();
+    </script>
+</body>
+</html>
