@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Time to Minutes Calculator</title>
+    <title>Vision Metering - Time to Minutes Calculator</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -22,12 +22,12 @@
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 40px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
             width: 100%;
             animation: fadeIn 0.5s ease-out;
         }
@@ -43,11 +43,95 @@
             }
         }
 
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #000;
+            font-style: italic;
+            letter-spacing: -1px;
+        }
+
+        .accent-bar {
+            height: 4px;
+            background: linear-gradient(to right, #FFD700 0%, #FFA500 50%, #FF0000 100%);
+            border-radius: 2px;
+            margin: 15px auto;
+            width: 120px;
+        }
+
         h1 {
             text-align: center;
             color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: 500;
+        }
+
+        .live-clock {
+            background: #f8f8f8;
+            border-radius: 15px;
+            padding: 20px;
             margin-bottom: 30px;
-            font-size: 28px;
+            text-align: center;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .timezone-selector {
+            margin-bottom: 15px;
+        }
+
+        .timezone-selector select {
+            padding: 8px 15px;
+            font-size: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 250px;
+        }
+
+        .timezone-selector select:hover {
+            border-color: #FF0000;
+        }
+
+        .timezone-selector select:focus {
+            outline: none;
+            border-color: #000;
+        }
+
+        .timezone-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .current-time {
+            font-size: 42px;
+            font-weight: bold;
+            color: #000;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .current-minutes {
+            font-size: 18px;
+            color: #666;
+        }
+
+        .current-minutes .minutes-value {
+            color: #FF0000;
+            font-weight: bold;
+            font-size: 24px;
         }
 
         .time-input {
@@ -70,11 +154,12 @@
             border-radius: 10px;
             text-align: center;
             transition: all 0.3s ease;
+            font-family: 'Courier New', monospace;
         }
 
         input[type="number"]:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #FF0000;
             transform: scale(1.05);
         }
 
@@ -102,32 +187,38 @@
         }
 
         .am-pm-btn.active {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
+            background: #000;
+            color: #FFD700;
+            border-color: #000;
             transform: scale(1.1);
         }
 
         .am-pm-btn:hover {
             transform: scale(1.05);
+            border-color: #FF0000;
         }
 
         .calculate-btn {
             width: 100%;
             padding: 15px;
             font-size: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, #000 0%, #333 100%);
+            color: #FFD700;
             border: none;
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
             margin-bottom: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .calculate-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #FF0000 0%, #FFA500 100%);
+            color: white;
         }
 
         .result {
@@ -141,18 +232,21 @@
             justify-content: center;
             align-items: center;
             transition: all 0.3s ease;
+            border: 2px solid transparent;
         }
 
         .result.show {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: linear-gradient(135deg, #FFF9E6 0%, #FFE6E6 100%);
+            border-color: #FFD700;
         }
 
         .minutes-display {
             font-size: 48px;
             font-weight: bold;
-            color: #667eea;
+            color: #FF0000;
             margin-bottom: 5px;
             animation: slideIn 0.5s ease-out;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         @keyframes slideIn {
@@ -172,7 +266,7 @@
         }
 
         .error {
-            color: #e74c3c;
+            color: #FF0000;
             font-size: 16px;
             margin-top: 10px;
         }
@@ -180,27 +274,81 @@
         .examples {
             margin-top: 30px;
             padding-top: 20px;
-            border-top: 1px solid #e0e0e0;
+            border-top: 2px solid #FFD700;
         }
 
         .examples h3 {
             font-size: 18px;
-            color: #666;
+            color: #000;
             margin-bottom: 10px;
+            font-weight: 600;
         }
 
         .example-item {
             display: flex;
             justify-content: space-between;
-            padding: 5px 0;
-            color: #888;
+            padding: 8px 10px;
+            color: #555;
             font-size: 14px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .example-item:hover {
+            background: #f8f8f8;
+            color: #000;
+        }
+
+        .example-item span:last-child {
+            color: #FF0000;
+            font-weight: 600;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .current-time {
+                font-size: 32px;
+            }
+            
+            .logo {
+                font-size: 28px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>⏰ Time to Minutes</h1>
+        <div class="header">
+            <div class="logo">VisionMetering</div>
+            <div class="accent-bar"></div>
+        </div>
+
+        <h1>Time to Minutes Calculator</h1>
+        
+        <div class="live-clock">
+            <div class="timezone-selector">
+                <div class="timezone-label">Timezone</div>
+                <select id="timezoneSelect">
+                    <option value="local">Local Time</option>
+                    <option value="America/New_York">USA - Eastern (SC)</option>
+                    <option value="Asia/Manila">Philippines</option>
+                    <option value="America/Chicago">USA - Central</option>
+                    <option value="America/Denver">USA - Mountain</option>
+                    <option value="America/Los_Angeles">USA - Pacific</option>
+                    <option value="Europe/London">UK - London</option>
+                    <option value="Asia/Tokyo">Japan - Tokyo</option>
+                    <option value="Australia/Sydney">Australia - Sydney</option>
+                </select>
+            </div>
+            <div class="current-time" id="liveClock">--:--:-- --</div>
+            <div class="current-minutes">
+                Current time: <span class="minutes-value" id="liveMinutes">0</span> minutes from midnight
+            </div>
+        </div>
         
         <div class="time-input">
             <div class="input-group">
@@ -224,7 +372,7 @@
         </div>
 
         <div class="examples">
-            <h3>Examples:</h3>
+            <h3>Quick Reference:</h3>
             <div class="example-item">
                 <span>12:00 AM (Midnight)</span>
                 <span>0 minutes</span>
@@ -250,6 +398,74 @@
         const amBtn = document.getElementById('am-btn');
         const pmBtn = document.getElementById('pm-btn');
         const resultDiv = document.getElementById('result');
+        const liveClock = document.getElementById('liveClock');
+        const liveMinutes = document.getElementById('liveMinutes');
+        const timezoneSelect = document.getElementById('timezoneSelect');
+
+        // Update live clock
+        function updateClock() {
+            const now = new Date();
+            let displayTime;
+            
+            const selectedTimezone = timezoneSelect.value;
+            
+            if (selectedTimezone === 'local') {
+                displayTime = now;
+            } else {
+                // Convert to selected timezone
+                const options = {
+                    timeZone: selectedTimezone,
+                    hour12: true,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                };
+                const timeString = now.toLocaleTimeString('en-US', options);
+                
+                // Parse the time string to get hours and minutes
+                const [time, period] = timeString.split(' ');
+                const [hours, minutes, seconds] = time.split(':').map(num => parseInt(num));
+                
+                // Calculate total minutes
+                let totalHours = hours;
+                if (period === 'PM' && hours !== 12) {
+                    totalHours += 12;
+                } else if (period === 'AM' && hours === 12) {
+                    totalHours = 0;
+                }
+                
+                const totalMinutes = totalHours * 60 + minutes;
+                
+                liveClock.textContent = timeString;
+                liveMinutes.textContent = totalMinutes;
+                return;
+            }
+            
+            // Local time calculation
+            let hours = displayTime.getHours();
+            const minutes = displayTime.getMinutes();
+            const seconds = displayTime.getSeconds();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            
+            // Calculate total minutes from midnight
+            const totalMinutes = hours * 60 + minutes;
+            
+            // Convert to 12-hour format for display
+            hours = hours % 12;
+            hours = hours ? hours : 12; // 0 should be 12
+            
+            const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} ${ampm}`;
+            
+            liveClock.textContent = timeString;
+            liveMinutes.textContent = totalMinutes;
+        }
+
+        // Update clock when timezone changes
+        timezoneSelect.addEventListener('change', updateClock);
+
+        // Update clock immediately and then every second
+        updateClock();
+        setInterval(updateClock, 1000);
 
         // AM/PM toggle
         amBtn.addEventListener('click', function() {
