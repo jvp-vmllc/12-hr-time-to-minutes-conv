@@ -51,6 +51,157 @@
             max-height: 90vh;
         }
 
+        .proto-upload-section {
+            margin-bottom: 30px;
+        }
+
+        .proto-upload-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .upload-btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .proto-status {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+
+        .proto-status.success {
+            color: #008000;
+            font-weight: 600;
+        }
+
+        .proto-status.error {
+            color: #FF0000;
+            font-weight: 600;
+        }
+
+        .proto-info {
+            background: #E6FFE6;
+            border: 1px solid #00CC00;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .proto-info h4 {
+            margin-bottom: 10px;
+            color: #006600;
+        }
+
+        .proto-field {
+            margin: 5px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .tab-navigation {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: #f0f0f0;
+            padding: 5px;
+            border-radius: 10px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+
+        .tab-btn.active {
+            background: #000;
+            color: #FFD700;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .utilities-option {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .utilities-option:hover {
+            border-color: #FFD700;
+        }
+
+        .utilities-option.selected {
+            border-color: #000;
+            background: #f8f8f8;
+        }
+
+        .utilities-option input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .utilities-option-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .utilities-option-desc {
+            font-size: 14px;
+            color: #666;
+            margin-left: 25px;
+        }
+
+        .alarm-id-selector {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f8f8;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .alarm-id-selector.show {
+            display: block;
+        }
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -338,7 +489,6 @@
             margin-bottom: 15px;
             border: 2px solid #e0e0e0;
             transition: all 0.3s ease;
-            cursor: pointer;
             animation: slideIn 0.3s ease-out;
         }
 
@@ -355,7 +505,6 @@
 
         .history-item:hover {
             border-color: #FFD700;
-            transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
@@ -479,6 +628,32 @@
 
             <h1>Clock Register Payload Generator</h1>
             
+            <!-- Proto File Upload Section -->
+            <div class="proto-upload-section" id="protoUploadSection">
+                <div class="section">
+                    <div class="section-title">Upload Proto File</div>
+                    <div class="proto-upload-container">
+                        <input type="file" id="protoFileInput" accept=".proto" style="display: none;">
+                        <button class="upload-btn" onclick="document.getElementById('protoFileInput').click()">
+                            📁 Select asset_tracker.proto
+                        </button>
+                        <div class="proto-status" id="protoStatus">No proto file loaded</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content (hidden until proto is loaded) -->
+            <div id="mainContent" style="display: none;">
+            
+            <!-- Tab Navigation -->
+            <div class="tab-navigation">
+                <button class="tab-btn active" onclick="switchTab('alarm')">Set Alarm</button>
+                <button class="tab-btn" onclick="switchTab('utilities')">Timer Utilities</button>
+            </div>
+            
+            <!-- Alarm Tab Content -->
+            <div id="alarmTab" class="tab-content active">
+            
             <div class="section">
                 <div class="section-title">Set Alarm Time</div>
                 
@@ -563,6 +738,114 @@
                 • Bit 15: One Shot flag<br><br>
                 <strong>Example:</strong> 5:00 AM with Time ID 1 = 300 minutes | (1 << 12) = 4396 = 0x112C → Protobuf: 78ac22
             </div>
+            </div><!-- End Alarm Tab -->
+            
+            <!-- Timer Utilities Tab Content -->
+            <div id="utilitiesTab" class="tab-content">
+                <div class="section">
+                    <div class="section-title">Select Timer Operation</div>
+                    
+                    <div class="utilities-option" onclick="selectUtilityOption('enable')">
+                        <input type="radio" name="utilityOption" id="enableOption" value="enable">
+                        <label for="enableOption">
+                            <div class="utilities-option-title">Enable Timer</div>
+                            <div class="utilities-option-desc">Enable a specific timer by ID</div>
+                        </label>
+                    </div>
+                    
+                    <div class="utilities-option" onclick="selectUtilityOption('disable')">
+                        <input type="radio" name="utilityOption" id="disableOption" value="disable">
+                        <label for="disableOption">
+                            <div class="utilities-option-title">Disable Timer</div>
+                            <div class="utilities-option-desc">Disable a specific timer by ID</div>
+                        </label>
+                    </div>
+                    
+                    <div class="utilities-option" onclick="selectUtilityOption('remove')">
+                        <input type="radio" name="utilityOption" id="removeOption" value="remove">
+                        <label for="removeOption">
+                            <div class="utilities-option-title">Remove Timer</div>
+                            <div class="utilities-option-desc">Delete a specific timer by ID</div>
+                        </label>
+                    </div>
+                    
+                    <div class="utilities-option" onclick="selectUtilityOption('removeAll')">
+                        <input type="radio" name="utilityOption" id="removeAllOption" value="removeAll">
+                        <label for="removeAllOption">
+                            <div class="utilities-option-title">Remove All Timers</div>
+                            <div class="utilities-option-desc">Delete all configured timers</div>
+                        </label>
+                    </div>
+                    
+                    <div class="utilities-option" onclick="selectUtilityOption('update')">
+                        <input type="radio" name="utilityOption" id="updateOption" value="update">
+                        <label for="updateOption">
+                            <div class="utilities-option-title">Update Timer</div>
+                            <div class="utilities-option-desc">Update timer minutes (requires clock_register payload)</div>
+                        </label>
+                    </div>
+                    
+                    <div class="alarm-id-selector" id="alarmIdSelector">
+                        <label class="option-label">Select Timer ID</label>
+                        <select id="utilityTimeId">
+                            <option value="1">Timer ID 1</option>
+                            <option value="2">Timer ID 2</option>
+                            <option value="3">Timer ID 3</option>
+                            <option value="4">Timer ID 4</option>
+                            <option value="5">Timer ID 5</option>
+                            <option value="6">Timer ID 6</option>
+                            <option value="7">Timer ID 7</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button class="generate-btn" onclick="generateUtilityPayload()">Generate Utility Payload</button>
+                
+                <div id="utilityResults" style="display: none;">
+                    <div class="section">
+                        <div class="section-title">Generated Utility Payload</div>
+                        
+                        <div class="results">
+                            <div class="result-item">
+                                <div class="result-label">Operation</div>
+                                <div class="result-value" id="operationResult">--</div>
+                            </div>
+                            
+                            <div class="result-item">
+                                <div class="result-label">Clock Utilities Value (Decimal)</div>
+                                <div class="result-value" id="utilityDecimalResult">--</div>
+                            </div>
+                            
+                            <div class="result-item">
+                                <div class="result-label">Clock Utilities Value (Hex)</div>
+                                <div class="result-value hex" id="utilityHexResult">--</div>
+                            </div>
+                            
+                            <div class="result-item">
+                                <div class="result-label">Protobuf Encoded</div>
+                                <div class="result-value protobuf" id="utilityProtobufResult">--</div>
+                            </div>
+                            
+                            <div class="result-item">
+                                <div class="result-label">Bit Breakdown (8-bit)</div>
+                                <div class="bit-breakdown" id="utilityBitBreakdown">--</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-note">
+                    <strong>Clock Utilities Format (8-bit):</strong><br>
+                    • Bits 0-2: Timer ID (1-7)<br>
+                    • Bit 3: Enable/Disable control<br>
+                    • Bit 4: Remove single timer<br>
+                    • Bit 5: Remove all timers<br>
+                    • Bit 6: Update timer (requires clock_register)<br>
+                    • Bit 7: Reserved
+                </div>
+            </div><!-- End Timer Utilities Tab -->
+            
+            </div><!-- End Main Content -->
         </div>
 
         <div class="history-panel">
@@ -587,6 +870,305 @@
 
         // History array to store generated payloads
         let payloadHistory = [];
+        let currentTab = 'alarm';
+        let selectedUtilityOption = null;
+        let protoData = null;
+
+        // Proto file fields we care about
+        const CLOCK_REGISTER_FIELD = 'clock_register';
+        const CLOCK_UTILITIES_FIELD = 'clock_utilities';
+
+        // Initialize file input listener
+        document.getElementById('protoFileInput').addEventListener('change', handleProtoFile);
+
+        // Handle proto file upload
+        function handleProtoFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            if (!file.name.endsWith('.proto')) {
+                updateProtoStatus('Please select a valid .proto file', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const content = e.target.result;
+                    parseProtoFile(content);
+                } catch (error) {
+                    updateProtoStatus('Error parsing proto file: ' + error.message, 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Parse proto file content
+        function parseProtoFile(content) {
+            // Extract message definitions
+            const messageRegex = /message\s+(\w+)\s*{([^}]+)}/g;
+            const fieldRegex = /optional\s+(\w+)\s+(\w+)\s*=\s*(\d+);/g;
+            
+            const messages = {};
+            let match;
+            
+            while ((match = messageRegex.exec(content)) !== null) {
+                const messageName = match[1];
+                const messageBody = match[2];
+                const fields = {};
+                
+                let fieldMatch;
+                while ((fieldMatch = fieldRegex.exec(messageBody)) !== null) {
+                    const fieldType = fieldMatch[1];
+                    const fieldName = fieldMatch[2];
+                    const fieldNumber = parseInt(fieldMatch[3]);
+                    
+                    fields[fieldName] = {
+                        type: fieldType,
+                        number: fieldNumber
+                    };
+                }
+                
+                messages[messageName] = fields;
+            }
+            
+            // Check if we have the required messages and fields
+            const downlinkMessage = messages['at_downlink_payload_pbuf'];
+            if (!downlinkMessage) {
+                updateProtoStatus('Error: at_downlink_payload_pbuf message not found', 'error');
+                return;
+            }
+            
+            // Check for required fields
+            const clockRegister = downlinkMessage[CLOCK_REGISTER_FIELD];
+            const clockUtilities = downlinkMessage[CLOCK_UTILITIES_FIELD];
+            
+            if (!clockRegister || !clockUtilities) {
+                updateProtoStatus('Error: Required fields (clock_register, clock_utilities) not found', 'error');
+                return;
+            }
+            
+            // Store proto data
+            protoData = {
+                clockRegisterField: clockRegister.number,
+                clockUtilitiesField: clockUtilities.number,
+                messages: messages
+            };
+            
+            // Update UI
+            updateProtoStatus(`Proto file loaded successfully! Clock fields: ${CLOCK_REGISTER_FIELD}=${clockRegister.number}, ${CLOCK_UTILITIES_FIELD}=${clockUtilities.number}`, 'success');
+            
+            // Show proto info
+            showProtoInfo();
+            
+            // Show main content
+            document.getElementById('protoUploadSection').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+        }
+
+        // Update proto status message
+        function updateProtoStatus(message, type = '') {
+            const statusEl = document.getElementById('protoStatus');
+            statusEl.textContent = message;
+            statusEl.className = 'proto-status' + (type ? ' ' + type : '');
+        }
+
+        // Show proto information
+        function showProtoInfo() {
+            if (!protoData) return;
+            
+            const infoHtml = `
+                <div class="proto-info">
+                    <h4>Loaded Proto Configuration:</h4>
+                    <div class="proto-field">• clock_register: Field ${protoData.clockRegisterField} (uint32)</div>
+                    <div class="proto-field">• clock_utilities: Field ${protoData.clockUtilitiesField} (uint32)</div>
+                    <div style="margin-top: 10px;">
+                        <button class="upload-btn" style="padding: 8px 16px; font-size: 14px;" onclick="changeProtoFile()">
+                            Change Proto File
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Add to both info notes
+            document.querySelectorAll('.info-note').forEach(note => {
+                note.innerHTML += infoHtml;
+            });
+        }
+
+        // Change proto file
+        function changeProtoFile() {
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('protoUploadSection').style.display = 'block';
+            document.getElementById('protoFileInput').value = '';
+            updateProtoStatus('No proto file loaded');
+            
+            // Clear proto info from info notes
+            document.querySelectorAll('.proto-info').forEach(el => el.remove());
+        }
+
+        // Update encodeProtobuf to use dynamic field numbers
+        function encodeProtobuf(fieldNumber, value) {
+            // Use dynamic field number from proto data if available
+            if (protoData) {
+                if (fieldNumber === 15) { // clock_register
+                    fieldNumber = protoData.clockRegisterField;
+                } else if (fieldNumber === 16) { // clock_utilities
+                    fieldNumber = protoData.clockUtilitiesField;
+                }
+            }
+            
+            // Encode field number and wire type
+            const tag = (fieldNumber << 3) | 0; // wire type 0 for varint
+            let result = tag.toString(16).padStart(2, '0');
+            
+            // Encode value as varint
+            let remaining = value;
+            let valueBytes = '';
+            
+            while (remaining > 0x7F) {
+                valueBytes += ((remaining & 0x7F) | 0x80).toString(16).padStart(2, '0');
+                remaining >>>= 7;
+            }
+            valueBytes += remaining.toString(16).padStart(2, '0');
+            
+            // For protobuf messages, we need to include the length of the value
+            // Since our values are always 1 byte after varint encoding, add length prefix
+            const lengthPrefix = (valueBytes.length / 2).toString(16).padStart(2, '0');
+            
+            return result + lengthPrefix + valueBytes;
+        }
+
+        // Tab switching
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            if (tab === 'alarm') {
+                document.getElementById('alarmTab').classList.add('active');
+            } else if (tab === 'utilities') {
+                document.getElementById('utilitiesTab').classList.add('active');
+            }
+        }
+
+        // Utility option selection
+        function selectUtilityOption(option) {
+            selectedUtilityOption = option;
+            
+            // Update radio button
+            document.getElementById(option + 'Option').checked = true;
+            
+            // Update visual selection
+            document.querySelectorAll('.utilities-option').forEach(el => {
+                el.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            
+            // Show/hide alarm ID selector
+            const alarmIdSelector = document.getElementById('alarmIdSelector');
+            if (option === 'removeAll') {
+                alarmIdSelector.classList.remove('show');
+            } else {
+                alarmIdSelector.classList.add('show');
+            }
+        }
+
+        // Generate utility payload
+        function generateUtilityPayload() {
+            if (!selectedUtilityOption) {
+                alert('Please select a timer operation');
+                return;
+            }
+            
+            const timeId = parseInt(document.getElementById('utilityTimeId').value);
+            let clockUtilities = 0;
+            let operationText = '';
+            
+            // Bits 0-2: Timer ID
+            clockUtilities |= (timeId & 0x7);
+            
+            switch (selectedUtilityOption) {
+                case 'enable':
+                    // Bit 3: Enable (1)
+                    clockUtilities |= (1 << 3);
+                    operationText = `Enable Timer ID ${timeId}`;
+                    break;
+                    
+                case 'disable':
+                    // Bit 3: Disable (0) - already 0
+                    operationText = `Disable Timer ID ${timeId}`;
+                    break;
+                    
+                case 'remove':
+                    // Bit 4: Remove single
+                    clockUtilities |= (1 << 4);
+                    operationText = `Remove Timer ID ${timeId}`;
+                    break;
+                    
+                case 'removeAll':
+                    // Bit 5: Remove all
+                    clockUtilities |= (1 << 5);
+                    operationText = 'Remove All Timers';
+                    break;
+                    
+                case 'update':
+                    // Bit 6: Update
+                    clockUtilities |= (1 << 6);
+                    operationText = `Update Timer ID ${timeId} (needs clock_register)`;
+                    break;
+            }
+            
+            // Convert to hex
+            const hexValue = '0x' + clockUtilities.toString(16).toUpperCase().padStart(2, '0');
+            
+            // Encode as protobuf varint
+            const protobufEncoded = encodeProtobuf(16, clockUtilities); // 16 will be replaced by proto data
+            
+            // Debug log
+            console.log('Clock Utilities Value:', clockUtilities, 'Hex:', hexValue, 'Protobuf:', protobufEncoded);
+            
+            // Create bit visualization
+            const binaryString = clockUtilities.toString(2).padStart(8, '0');
+            const bitBreakdown = `
+                <span style="background: #ccc; color: #666">${binaryString[0]}</span>
+                <span style="background: ${selectedUtilityOption === 'update' ? '#E6FFE6' : '#eee'}; color: ${selectedUtilityOption === 'update' ? '#006600' : '#999'}">${binaryString[1]}</span>
+                <span style="background: ${selectedUtilityOption === 'removeAll' ? '#FFE6E6' : '#eee'}; color: ${selectedUtilityOption === 'removeAll' ? '#CC0000' : '#999'}">${binaryString[2]}</span>
+                <span style="background: ${selectedUtilityOption === 'remove' ? '#FFE6E6' : '#eee'}; color: ${selectedUtilityOption === 'remove' ? '#CC0000' : '#999'}">${binaryString[3]}</span>
+                <span style="background: ${(selectedUtilityOption === 'enable' || selectedUtilityOption === 'disable') ? '#E6F3FF' : '#eee'}; color: ${(selectedUtilityOption === 'enable' || selectedUtilityOption === 'disable') ? '#0066CC' : '#999'}">${binaryString[4]}</span>
+                <span style="background: #FFE6E6; color: #CC0000">${binaryString.substring(5)}</span><br>
+                <small>Reserved | Update | RemoveAll | RemoveSingle | Control | Timer ID: ${timeId}</small>
+            `;
+            
+            // Display results
+            document.getElementById('operationResult').textContent = operationText;
+            document.getElementById('utilityDecimalResult').textContent = clockUtilities;
+            document.getElementById('utilityHexResult').textContent = hexValue;
+            document.getElementById('utilityProtobufResult').textContent = protobufEncoded;
+            document.getElementById('utilityBitBreakdown').innerHTML = bitBreakdown;
+            
+            document.getElementById('utilityResults').style.display = 'block';
+            
+            // Add to history with utility flag
+            addToHistory({
+                type: 'utility',
+                operation: operationText,
+                timeId: timeId,
+                decimal: clockUtilities,
+                hex: hexValue,
+                protobuf: protobufEncoded,
+                timestamp: new Date()
+            });
+        }
 
         // AM/PM toggle
         amBtn.addEventListener('click', function() {
@@ -660,9 +1242,8 @@
             // Convert to hex
             const hexValue = '0x' + clockRegister.toString(16).toUpperCase().padStart(4, '0');
 
-            // Encode as protobuf varint for field 15
-            // Field 15 with wire type 0 (varint) = (15 << 3) | 0 = 120 = 0x78
-            const protobufEncoded = encodeProtobuf(15, clockRegister);
+            // Encode as protobuf varint
+            const protobufEncoded = encodeProtobuf(15, clockRegister); // 15 will be replaced by proto data
 
             // Create bit visualization
             const binaryString = clockRegister.toString(2).padStart(16, '0');
@@ -713,18 +1294,35 @@
                 clearBtn.style.display = 'none';
             } else {
                 clearBtn.style.display = 'block';
-                historyList.innerHTML = payloadHistory.map((item, index) => `
-                    <div class="history-item" onclick="loadFromHistory(${index})">
-                        <div class="history-time">${item.time}</div>
-                        <div class="history-details">
-                            <div>Time ID: ${item.timeId} | One Shot: ${item.oneShot ? 'Yes' : 'No'}</div>
-                            <div>Minutes: ${item.minutes} | Decimal: ${item.decimal}</div>
-                        </div>
-                        <div class="history-protobuf">${item.protobuf}</div>
-                        <button class="copy-btn" onclick="copyToClipboard('${item.protobuf}', event)">Copy Protobuf</button>
-                        <div class="history-timestamp">${formatTimestamp(item.timestamp)}</div>
-                    </div>
-                `).join('');
+                historyList.innerHTML = payloadHistory.map((item, index) => {
+                    if (item.type === 'utility') {
+                        return `
+                            <div class="history-item">
+                                <div class="history-time" style="color: #0066CC;">⚙️ ${item.operation}</div>
+                                <div class="history-details">
+                                    <div>Type: Timer Utility</div>
+                                    <div>Decimal: ${item.decimal} | Hex: ${item.hex}</div>
+                                </div>
+                                <div class="history-protobuf">${item.protobuf}</div>
+                                <button class="copy-btn" onclick="copyToClipboard('${item.protobuf}', event)">Copy Protobuf</button>
+                                <div class="history-timestamp">${formatTimestamp(item.timestamp)}</div>
+                            </div>
+                        `;
+                    } else {
+                        return `
+                            <div class="history-item">
+                                <div class="history-time">⏰ ${item.time}</div>
+                                <div class="history-details">
+                                    <div>Time ID: ${item.timeId} | One Shot: ${item.oneShot ? 'Yes' : 'No'}</div>
+                                    <div>Minutes: ${item.minutes} | Decimal: ${item.decimal}</div>
+                                </div>
+                                <div class="history-protobuf">${item.protobuf}</div>
+                                <button class="copy-btn" onclick="copyToClipboard('${item.protobuf}', event)">Copy Protobuf</button>
+                                <div class="history-timestamp">${formatTimestamp(item.timestamp)}</div>
+                            </div>
+                        `;
+                    }
+                }).join('');
             }
         }
 
@@ -732,29 +1330,42 @@
             const item = payloadHistory[index];
             if (!item) return;
             
-            // Parse time
-            const [time, period] = item.time.split(' ');
-            const [hours, minutes] = time.split(':').map(n => parseInt(n));
-            
-            // Set inputs
-            hoursInput.value = hours;
-            minutesInput.value = minutes;
-            
-            // Set AM/PM
-            if (period === 'AM') {
-                amBtn.classList.add('active');
-                pmBtn.classList.remove('active');
+            if (item.type === 'utility') {
+                // Switch to utilities tab
+                document.querySelectorAll('.tab-btn')[1].click();
+                
+                // Cannot fully recreate utility state, just show alert
+                alert(`Previous utility operation:\n${item.operation}\nProtobuf: ${item.protobuf}`);
             } else {
-                pmBtn.classList.add('active');
-                amBtn.classList.remove('active');
+                // Switch to alarm tab if not already there
+                if (currentTab !== 'alarm') {
+                    document.querySelectorAll('.tab-btn')[0].click();
+                }
+                
+                // Parse time
+                const [time, period] = item.time.split(' ');
+                const [hours, minutes] = time.split(':').map(n => parseInt(n));
+                
+                // Set inputs
+                hoursInput.value = hours;
+                minutesInput.value = minutes;
+                
+                // Set AM/PM
+                if (period === 'AM') {
+                    amBtn.classList.add('active');
+                    pmBtn.classList.remove('active');
+                } else {
+                    pmBtn.classList.add('active');
+                    amBtn.classList.remove('active');
+                }
+                
+                // Set other options
+                timeIdSelect.value = item.timeId;
+                oneShotCheckbox.checked = item.oneShot;
+                
+                // Generate payload to show results
+                generatePayload();
             }
-            
-            // Set other options
-            timeIdSelect.value = item.timeId;
-            oneShotCheckbox.checked = item.oneShot;
-            
-            // Generate payload to show results
-            generatePayload();
         }
 
         function copyToClipboard(text, event) {
@@ -779,8 +1390,6 @@
             if (confirm('Clear all history?')) {
                 payloadHistory = [];
                 updateHistoryDisplay();
-                // Also hide the results if they're showing
-                resultsDiv.style.display = 'none';
             }
         }
 
@@ -799,22 +1408,23 @@
             
             // Encode value as varint
             let remaining = value;
-            let encoded = '';
+            let valueBytes = '';
             
             while (remaining > 0x7F) {
-                encoded += ((remaining & 0x7F) | 0x80).toString(16).padStart(2, '0');
+                valueBytes += ((remaining & 0x7F) | 0x80).toString(16).padStart(2, '0');
                 remaining >>>= 7;
             }
-            encoded += remaining.toString(16).padStart(2, '0');
+            valueBytes += remaining.toString(16).padStart(2, '0');
             
-            return result + encoded;
+            // For protobuf messages, we need to include the length of the value
+            // Since our values are always 1 byte after varint encoding, add length prefix
+            const lengthPrefix = (valueBytes.length / 2).toString(16).padStart(2, '0');
+            
+            return result + lengthPrefix + valueBytes;
         }
 
-        // Generate initial payload with default values - but don't add to history
-        window.addEventListener('load', function() {
-            // Just show empty history on load
-            updateHistoryDisplay();
-        });
+        // Initialize the app
+        updateHistoryDisplay();
     </script>
 </body>
 </html>
